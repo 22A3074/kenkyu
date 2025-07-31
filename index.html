@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>VC復号Webアプリ</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin: 2em; }
+    canvas { border: 1px solid #aaa; margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <h2>出席確認（VC合成）</h2>
+  <p>Share A画像をアップロード：</p>
+  <input type="file" id="shareA" accept="image/*"><br><br>
+
+  <p>Share B画像をアップロード：</p>
+  <input type="file" id="shareB" accept="image/*"><br><br>
+
+  <button onclick="combineShares()">合成してQRを読み取る</button>
+
+  <canvas id="canvas" width="300" height="300"></canvas>
+  <p id="result">QRコード：未読取</p>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
