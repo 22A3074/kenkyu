@@ -1,22 +1,27 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>テストページ</title>
+  <title>VC復号Webアプリ</title>
   <style>
-    body {
-      font-family: sans-serif;
-      background-color: #f2f2f2;
-      text-align: center;
-      padding-top: 100px;
-    }
-    h1 {
-      color: #333;
-    }
+    body { font-family: sans-serif; text-align: center; margin: 2em; }
+    canvas { border: 1px solid #aaa; margin-top: 1em; }
   </style>
 </head>
 <body>
-  <h1>GitHub Pages テスト成功！</h1>
-  <p>このページは GitHub Pages を使って公開されています。</p>
+  <h2>出席確認（VC合成）</h2>
+  <p>Share A画像をアップロード：</p>
+  <input type="file" id="shareA" accept="image/*"><br><br>
+
+  <p>Share B画像をアップロード：</p>
+  <input type="file" id="shareB" accept="image/*"><br><br>
+
+  <button onclick="combineShares()">合成してQRを読み取る</button>
+
+  <canvas id="canvas" width="300" height="300"></canvas>
+  <p id="result">QRコード：未読取</p>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
