@@ -15,10 +15,88 @@
   <p>Share B画像をアップロード：</p>
   <input type="file" id="shareB" accept="image/*"><br><br>
   <button onclick="combineShares()">合成してQRを読み取る</button>
+  <button id="downloadBtn" style="display:none;" onclick="downloadCombined()">合成結果をダウンロード</button>
   <canvas id="canvas" width="300" height="300"></canvas>
   <p id="result">QRコード：未読取</p>
 
+  <!-- QRコード解析ライブラリ -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
-  <script src="app.js"></script>
+  
+  <script>
+  // 画像読み込み（FileReader経由）
+  function loadImage(file) {
+      return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = e => {
+              const img = new Image();
+              img.onload = () => resolve(img);
+              img.onerror = reject;
+              img.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+      });
+  }
+
+  // 合成処理
+  async function combineShares() {
+      const fileA = document.getElementById('shareA').files[0];
+      const fileB = document.getElementById('shareB').files[0];
+      if (!fileA || !fileB) {
+          alert("両方のShare画像を選択してください");
+          return;
+      }
+
+      const imgA = await loadImage(fileA);
+      const imgB = await loadImage(fileB);
+
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      const size = 300;  // QRコード読み取り用にリサイズ
+      canvas.width = size;
+      canvas.height = size;
+
+      // 1枚目描画
+      ctx.drawImage(imgA, 0, 0, size, size);
+      const imgDataA = ctx.getImageData(0, 0, size, size);
+
+      // 2枚目描画（オフスクリーン）
+      const tmpCanvas = document.createElement('canvas');
+      tmpCanvas.width = size;
+      tmpCanvas.height = size;
+      const tmpCtx = tmpCanvas.getContext('2d');
+      tmpCtx.drawImage(imgB, 0, 0, size, size);
+      const imgDataB = tmpCtx.getImageData(0, 0, size, size);
+
+      // === ピクセルごとの乗算合成 ===
+      const dataA = imgDataA.data;
+      const dataB = imgDataB.data;
+      for (let i = 0; i < dataA.length; i += 4) {
+          dataA[i]   = (dataA[i]   * dataB[i])   / 255; // R
+          dataA[i+1] = (dataA[i+1] * dataB[i+1]) / 255; // G
+          dataA[i+2] = (dataA[i+2] * dataB[i+2]) / 255; // B
+          dataA[i+3] = 255; // アルファは常に不透明
+      }
+      ctx.putImageData(imgDataA, 0, 0);
+
+      // === QRコード読み取り ===
+      const combinedData = ctx.getImageData(0, 0, size, size);
+      const code = jsQR(combinedData.data, size, size);
+      document.getElementById('result').textContent = code ? "QRコード：" + code.data : "QRコード：読取失敗";
+
+      // ダウンロードボタン表示
+      document.getElementById('downloadBtn').style.display = "inline-block";
+  }
+
+  // 合成結果のダウンロード
+  function downloadCombined() {
+      const canvas = document.getElementById('canvas');
+      const link = document.createElement('a');
+      link.download = "combined.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+  }
+  </script>
 </body>
 </html>
+
+これを試してみてほしいです．
