@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <title>VC復号Webアプリ</title>
@@ -12,12 +12,9 @@
   <h2>出席確認（VC合成）</h2>
   <p>Share A画像をアップロード：</p>
   <input type="file" id="shareA" accept="image/*"><br><br>
-
   <p>Share B画像をアップロード：</p>
   <input type="file" id="shareB" accept="image/*"><br><br>
-
   <button onclick="combineShares()">合成してQRを読み取る</button>
-
   <canvas id="canvas" width="300" height="300"></canvas>
   <p id="result">QRコード：未読取</p>
 
